@@ -21,7 +21,11 @@ const userSchema = mongoose.Schema({
 			},
 			relation: Number,
 		}
-	]
+	],
+	admin: {
+		type: Boolean,
+		require: true
+	}
 })
 
 userSchema.set('toJSON', {

@@ -4,6 +4,7 @@ const uniqueValidator = require('mongoose-unique-validator')
 const cpkeySchema = mongoose.Schema({
 	key: {
 		type: String,
+		minlength: 3,
 		required: true,
 		unique: true,
 	},

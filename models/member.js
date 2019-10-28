@@ -14,6 +14,7 @@ const memberSchema = mongoose.Schema({
 	birthday: Date,
 	hometown: String,
 	pic_link: String,
+	team: [String],
 	fans: [
 		{
 			user: {

@@ -17,6 +17,7 @@ membersRouter.post('/', async (request, response, next) => {
 			birthday: body.birthday,
 			hometown: body.hometown,
 			pic_link: body.pic_link,
+			team: body.team,
 			fans: []
 		})
 
