@@ -3,27 +3,66 @@ const uniqueValidator = require('mongoose-unique-validator')
 
 const memberSchema = mongoose.Schema({
 	name_e: {
-		type: String,
-		required: true
+		firstname: {
+			type: String,
+			required: true
+		},
+		lastname: {
+			type: String,
+			required: true
+		}
 	},
 	name_j: {
 		type: String,
 		required: true
 	},
+	name_k: {
+		firstname: {
+			type: String,
+			required: true
+		},
+		lastname: {
+			type: String,
+			required: true
+		}
+	},
 	nickname: String,
-	birthday: Date,
+	birthday: {
+		type: Date,
+		required: true
+	},
 	hometown: String,
+	generation: {
+		name: {
+			type: String,
+			required: true
+		},
+		sortValue : {
+			type: Number,
+			required: true
+		},
+	},
 	pic_link: String,
 	team: [String],
-	fans: [
-		{
-			user: {
-				type: mongoose.Schema.Types.ObjectId,
-				ref: 'User'
-			},
-			relation: Number,
-		}
-	]
+	agency: {
+		user: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'User'
+		},
+		relation: Number,
+	},
+	value: {
+		type: Number,
+		required: true
+	},
+	current: {
+		type: Boolean,
+		required: true
+	},
+	kks: {
+		type: Boolean,
+		required: true
+	}
 })
 
 memberSchema.set('toJSON', {
