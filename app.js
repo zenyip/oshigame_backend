@@ -1,5 +1,6 @@
 const config = require('./utils/config')
 const express = require('express')
+const path = require('path')
 const app = express()
 const bodyParser = require('body-parser')
 const cors = require('cors')
@@ -39,6 +40,12 @@ app.use('/api/login', loginRouter)
 app.use('/api/negotiations', negotiationsRouter)
 app.use('/api/phrase', phraseRouter)
 app.use('/api/resetDB', resetRouter)
+
+const catchAll = (request, response) => {
+	response.sendFile(path.join(__dirname+'/build/index.html'))
+}
+
+app.get('/*', catchAll)
 
 /*if (process.env.NODE_ENV === 'test') {
 	const testingRouter = require('./controllers/testing')
