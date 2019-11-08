@@ -54,7 +54,7 @@ negotiationsRouter.post('/', async (request, response, next) => {
 			return response.status(401).json({ error: 'token missing or invalid' })
 		}
 
-		const user = await User.findById(decodedToken.id)
+		let user = await User.findById(decodedToken.id)
 
 		if (user.oshimens.includes(body.memberId)) {
 			return response.status(400).json({ error: 'the member is already in your agency' })
@@ -71,7 +71,6 @@ negotiationsRouter.post('/', async (request, response, next) => {
 		}
 
 		const oldApplication = await Negotiation.findOne({ member: body.memberId })
-
 		if (oldApplication) {
 			if (body.bid < oldApplication.bid + 10) {
 				return response.status(400).json({ error: 'new bid have to be at least 10 higher than the current bid' })
@@ -84,10 +83,9 @@ negotiationsRouter.post('/', async (request, response, next) => {
 			}
 			await User.findByIdAndUpdate(oldApplicant.id, update, { new: true })
 		}
-
+		user = await User.findById(decodedToken.id)
 		const update = { assest: user.assest - body.bid }
 		await User.findByIdAndUpdate(user.id, update, { new: true })
-
 		let savedNegotiation
 
 		if (oldApplication) {
@@ -114,7 +112,6 @@ negotiationsRouter.post('/', async (request, response, next) => {
 			negotiations: user.negotiations.concat(savedNegotiation.id)
 		}
 		await User.findByIdAndUpdate(user.id, applicantUpdate, { new: true })
-
 		response.json(savedNegotiation)
 	} catch (exception) {
 		next(exception)
