@@ -69,7 +69,9 @@ const memberSchema = mongoose.Schema({
 memberSchema.set('toJSON', {
 	transform: (document, returnedObject) => {
 		returnedObject.id = returnedObject._id.toString()
-		returnedObject.pic_link = 'https://s.akb48.co.jp/members/profile/renew190501/' + returnedObject.pic_link + '.jpg'
+		if (returnedObject.pic_link.length < 10) {
+			returnedObject.pic_link = 'https://s.akb48.co.jp/members/profile/renew190501/' + returnedObject.pic_link + '.jpg'
+		}
 		delete returnedObject._id
 		delete returnedObject.__v
 	}
