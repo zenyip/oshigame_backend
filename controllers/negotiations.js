@@ -137,7 +137,8 @@ negotiationsRouter.post('/settle', async (request, response, next) => {
 			for (let i = 0; i < negotiations.length; i++) {
 				const memberUpdate = {
 					negotiation: null,
-					agency: negotiations[i].applicant
+					agency: negotiations[i].applicant,
+					value: negotiations[i].bid
 				}
 				await Member.findByIdAndUpdate(negotiations[i].member, memberUpdate, { new: true })
 				const applicant = await User.findById(negotiations[i].applicant)
