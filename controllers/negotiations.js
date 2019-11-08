@@ -77,7 +77,11 @@ negotiationsRouter.post('/', async (request, response, next) => {
 				return response.status(400).json({ error: 'new bid have to be at least 10 higher than the current bid' })
 			}
 			const oldApplicant = await User.findById(oldApplication.applicant)
-			const update = { assest: oldApplicant.assest + oldApplication.bid }
+			const updatedNegotiations = oldApplicant.negotiations.filter(n => !n.toString().includes(oldApplication.id))
+			const update = {
+				assest: oldApplicant.assest + oldApplication.bid,
+				negotiations: updatedNegotiations
+			}
 			await User.findByIdAndUpdate(oldApplicant.id, update, { new: true })
 		}
 
@@ -105,11 +109,11 @@ negotiationsRouter.post('/', async (request, response, next) => {
 				negotiation: savedNegotiation.id
 			}
 			await Member.findByIdAndUpdate(member.id, memberUpdate, { new: true })
-			const applicantUpdate = {
-				negotiations: user.negotiations.concat(savedNegotiation.id)
-			}
-			await User.findByIdAndUpdate(user.id, applicantUpdate, { new: true })
 		}
+		const applicantUpdate = {
+			negotiations: user.negotiations.concat(savedNegotiation.id)
+		}
+		await User.findByIdAndUpdate(user.id, applicantUpdate, { new: true })
 
 		response.json(savedNegotiation)
 	} catch (exception) {

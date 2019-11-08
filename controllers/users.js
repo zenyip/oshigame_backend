@@ -82,4 +82,33 @@ usersRouter.post('/', async (request, response, next) => {
 	}
 })
 
+usersRouter.put('/addAssest', async (request, response, next) => {
+	try {
+		const decodedToken = jwt.verify(request.token, process.env.SECRET)
+		if (!request.token || !decodedToken.id) {
+			return response.status(401).json({ error: 'token missing or invalid' })
+		}
+
+		const user = await User.findById(decodedToken.id)
+
+		if (!user || !user.admin) {
+			return response.status(401).json({ error: 'access limited to admin only' })
+		}
+
+		const body = request.body
+
+		const targetUser = await User.findById(body.user)
+
+		const update = {
+			assest: targetUser.assest + body.amount
+		}
+
+		const updatedUser = await User.findByIdAndUpdate(body.user, update, { new: true })
+
+		response.json(updatedUser)
+	} catch (exception) {
+		next(exception)
+	}
+})
+
 module.exports = usersRouter

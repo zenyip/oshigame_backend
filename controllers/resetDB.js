@@ -26,7 +26,7 @@ resetRouter.post('/', async (request, response, next) => {
 
 		const userUpdate = {
 			oshimens: [],
-			assest: 2000,
+			assest: 4000,
 			negotiations: []
 		}
 		await User.updateMany({}, userUpdate, { new: true })
