@@ -17,7 +17,7 @@ usersRouter.get('/', async (request, response, next) => {
 			return response.status(401).json({ error: 'access limited to admin only' })
 		}
 
-		const users = await User.find({}).populate('oshimens')
+		const users = await User.find({}).populate('oshimens negotiations')
 		response.json(users.map(user => user.toJSON()))
 
 	} catch (exception) {
@@ -33,7 +33,7 @@ usersRouter.get('/byToken', async (request, response, next) => {
 			return response.status(401).json({ error: 'token missing or invalid' })
 		}
 
-		const user = await User.findById(decodedToken.id).populate('oshimens')
+		const user = await User.findById(decodedToken.id).populate('oshimens negotiations')
 		if (!user) {
 			return response.status(400).json({ error: 'user not found' })
 		}
@@ -68,7 +68,9 @@ usersRouter.post('/', async (request, response, next) => {
 			displayname: body.displayname,
 			passwordHash,
 			oshimens: [],
-			admin: false
+			assest: 2000,
+			admin: false,
+			negotiation: []
 		})
 
 		const savedUser = await user.save()

@@ -45,11 +45,8 @@ const memberSchema = mongoose.Schema({
 	pic_link: String,
 	team: [String],
 	agency: {
-		user: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: 'User'
-		},
-		relation: Number,
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'User'
 	},
 	value: {
 		type: Number,
@@ -62,12 +59,17 @@ const memberSchema = mongoose.Schema({
 	kks: {
 		type: Boolean,
 		required: true
+	},
+	negotiation: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'Negotiation'
 	}
 })
 
 memberSchema.set('toJSON', {
 	transform: (document, returnedObject) => {
 		returnedObject.id = returnedObject._id.toString()
+		returnedObject.pic_link = 'https://s.akb48.co.jp/members/profile/renew190501/' + returnedObject.pic_link + '.jpg'
 		delete returnedObject._id
 		delete returnedObject.__v
 	}

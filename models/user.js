@@ -15,17 +15,24 @@ const userSchema = mongoose.Schema({
 	passwordHash: String,
 	oshimens: [
 		{
-			member: {
-				type: mongoose.Schema.Types.ObjectId,
-				ref: 'Member'
-			},
-			relation: Number,
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'Member'
 		}
 	],
+	assest: {
+		type: Number,
+		require: true
+	},
 	admin: {
 		type: Boolean,
 		require: true
-	}
+	},
+	negotiations: [
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'Negotiation'
+		}
+	]
 })
 
 userSchema.set('toJSON', {

@@ -15,7 +15,7 @@ const generationSortValue = checkGen => {
 }
 
 membersRouter.get('/', async (request, response) => {
-	const members = await Member.find({}).populate('fans')
+	const members = await Member.find({}).populate('fans negotiation agency')
 	response.json(members.map(m => m.toJSON()))
 })
 
