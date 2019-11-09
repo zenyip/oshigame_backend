@@ -30,6 +30,7 @@ negotiationsRouter.get('/currentbids', async (request, response, next) => {
 		let negotiations = await Negotiation.find({}).populate('member')
 		negotiations = negotiations.map(n => {
 			return {
+				'memberId': n.member.id,
 				'nickname': n.member.nickname,
 				'bid': n.bid,
 				'id': n.id
