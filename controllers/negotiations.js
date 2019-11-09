@@ -17,14 +17,29 @@ negotiationsRouter.get('/', async (request, response, next) => {
 			return response.status(401).json({ error: 'access limited to admin only' })
 		}
 
-		const negotiations = await Negotiation.find({}).populate('member applicant')
-		response.json(negotiations.map(negotiation => negotiation.toJSON()))
+		const fullNegotiations = await Negotiation.find({}).populate('member applicant')
+		response.json(fullNegotiations.map(negotiation => negotiation.toJSON()))
 
 	} catch (exception) {
 		next(exception)
 	}
 })
 
+negotiationsRouter.get('/currentbids', async (request, response, next) => {
+	try {
+		let negotiations = await Negotiation.find({}).populate('member')
+		negotiations = negotiations.map(n => {
+			return {
+				'nickname': n.member.nickname,
+				'bid': n.bid,
+				'id': n.id
+			}
+		})
+		response.json(negotiations)
+	} catch (exception) {
+		next(exception)
+	}
+})
 
 negotiationsRouter.get('/byUserToken', async (request, response, next) => {
 	try {
