@@ -51,7 +51,8 @@ membersRouter.post('/', async (request, response, next) => {
 			agency: null,
 			value: 480,
 			current: body.current,
-			kks: body.kks
+			kks: body.kks,
+			tradable: true
 		})
 
 		const savedMember = await member.save()

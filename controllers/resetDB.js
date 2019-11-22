@@ -20,7 +20,8 @@ resetRouter.post('/', async (request, response, next) => {
 		const memberUpdate = {
 			agency: null,
 			value: 480,
-			negotiation: null
+			negotiation: null,
+			tradable: true
 		}
 		await Member.updateMany({}, memberUpdate, { new: true })
 

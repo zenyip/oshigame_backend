@@ -43,6 +43,18 @@ usersRouter.get('/byToken', async (request, response, next) => {
 	}
 })
 
+usersRouter.get('/displaynames', async (request, response, next) => {
+	try {
+		const displaynames = await User.find({}, 'displayname')
+		if (!displaynames) {
+			return response.status(400).json({ error: 'user not found' })
+		}
+		response.json(displaynames)
+	} catch (exception) {
+		next(exception)
+	}
+})
+
 usersRouter.post('/', async (request, response, next) => {
 	try {
 		const body = request.body

@@ -63,6 +63,10 @@ const memberSchema = mongoose.Schema({
 	negotiation: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'Negotiation'
+	},
+	tradable: {
+		type: Boolean,
+		required: true
 	}
 })
 

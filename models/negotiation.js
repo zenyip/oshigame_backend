@@ -1,11 +1,9 @@
 const mongoose = require('mongoose')
-const uniqueValidator = require('mongoose-unique-validator')
 
 const negotiationSchema = mongoose.Schema({
 	member: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'Member',
-		unique: true,
 		required: true
 	},
 	bid: {
@@ -18,6 +16,11 @@ const negotiationSchema = mongoose.Schema({
 	},
 	applicant: {
 		type: mongoose.Schema.Types.ObjectId,
+		ref: 'User',
+		required: true
+	},
+	recipient: {
+		type: mongoose.Schema.Types.ObjectId,
 		ref: 'User'
 	}
 })
@@ -29,7 +32,5 @@ negotiationSchema.set('toJSON', {
 		delete returnedObject.__v
 	}
 })
-
-negotiationSchema.plugin(uniqueValidator)
 
 module.exports = mongoose.model('Negotiation', negotiationSchema)
