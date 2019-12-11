@@ -52,6 +52,10 @@ const memberSchema = mongoose.Schema({
 		type: Number,
 		required: true
 	},
+	fanSize: {
+		type: Number,
+		required: true
+	},
 	current: {
 		type: Boolean,
 		required: true
@@ -67,6 +71,14 @@ const memberSchema = mongoose.Schema({
 	tradable: {
 		type: Boolean,
 		required: true
+	},
+	job: {
+		name: {
+			type: String
+		},
+		endTime: {
+			type: Date
+		}
 	}
 })
 

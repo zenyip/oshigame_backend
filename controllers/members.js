@@ -50,6 +50,7 @@ membersRouter.post('/', async (request, response, next) => {
 			team: body.team,
 			agency: null,
 			value: 480,
+			fanSize: 0,
 			current: body.current,
 			kks: body.kks,
 			tradable: true

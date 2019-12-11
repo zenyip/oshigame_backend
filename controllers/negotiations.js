@@ -85,7 +85,7 @@ negotiationsRouter.post('/', async (request, response, next) => {
 		if (body.tradeType === 'bid') {
 
 			if (user.assest < body.bid) {
-				return response.status(400).json({ error: 'you do not have enough assest' })
+				return response.status(400).json({ error: 'you do not have enough money' })
 			}
 
 			const member = await Member.findById(body.memberId)
@@ -140,7 +140,7 @@ negotiationsRouter.post('/', async (request, response, next) => {
 
 		if (body.tradeType === 'offer') {
 			if (user.assest < body.bid) {
-				return response.status(400).json({ error: 'you do not have enough assest' })
+				return response.status(400).json({ error: 'you do not have enough money' })
 			}
 
 			const member = await Member.findById(body.memberId)
@@ -179,7 +179,7 @@ negotiationsRouter.post('/', async (request, response, next) => {
 
 		if (body.tradeType === 'force') {
 			if (user.assest < body.bid) {
-				return response.status(400).json({ error: 'you do not have enough assest' })
+				return response.status(400).json({ error: 'you do not have enough money' })
 			}
 
 			const member = await Member.findById(body.memberId)
@@ -461,6 +461,46 @@ negotiationsRouter.post('/settle', async (request, response, next) => {
 		await User.updateMany({}, userUpdate, { new: true })
 
 		response.status(200).json( { message: 'negotiations settled' } )
+	} catch (exception) {
+		next(exception)
+	}
+})
+
+negotiationsRouter.post('/payrise', async (request, response, next) => {
+	try {
+		const body = request.body
+
+		const decodedToken = jwt.verify(request.token, process.env.SECRET)
+		if (!request.token || !decodedToken.id) {
+			return response.status(401).json({ error: 'token missing or invalid' })
+		}
+
+		const user = await User.findById(decodedToken.id)
+
+		if (!user.oshimens.includes(body.memberId)) {
+			return response.status(400).json({ error: 'only owner of the member can access this function' })
+		}
+
+		if (body.amount <= 0) {
+			return response.status(400).json({ error: 'pay rise amount have to be positive' })
+		}
+
+		if (user.assest < body.amount) {
+			return response.status(400).json({ error: 'you do not have enough money' })
+		}
+
+		const member = await Member.findById(body.memberId)
+
+		const userUpdate = {
+			assest: user.assest - body.amount
+		}
+		await User.findByIdAndUpdate(user.id, userUpdate, { new: true })
+
+		const memberUpdate = {
+			value: Number(member.value) + Number(body.amount)
+		}
+		const updatedMember = await Member.findByIdAndUpdate(member.id, memberUpdate, { new: true })
+		response.json(updatedMember)
 	} catch (exception) {
 		next(exception)
 	}
