@@ -241,15 +241,59 @@ negotiationsRouter.post('/', async (request, response, next) => {
 			response.json(savedNegotiation)
 		}
 
+		if (body.tradeType === 'late') {
+			if (user.oshimens.length >= 3) {
+				return response.status(400).json({ error: 'late signing only available for agency with less than 3 members' })
+			}
+
+			if (user.assest < body.bid) {
+				return response.status(400).json({ error: 'you do not have enough money' })
+			}
+
+			const member = await Member.findById(body.memberId)
+			if (member.agency) {
+				return response.status(400).json({ error: 'this member already has an agency' })
+			}
+
+			const negotiation = new Negotiation({
+				member: body.memberId,
+				bid: body.bid,
+				tradeType: body.tradeType,
+				applicant: user.id,
+			})
+			const savedNegotiation = await negotiation.save()
+
+			const memberUpdate = {
+				agency: user.id,
+				value: body.bid
+			}
+			await Member.findByIdAndUpdate(body.memberId, memberUpdate, { new: true })
+
+			const applicantUpdate = {
+				assest: user.assest - body.bid,
+				oshimens: user.oshimens.concat(body.memberId),
+				negotiations: user.negotiations.concat(savedNegotiation.id)
+			}
+			await User.findByIdAndUpdate(user.id, applicantUpdate, { new: true })
+
+			response.json(savedNegotiation)
+		}
+
 		if (body.tradeType === 'release') {
 			const member = await Member.findById(body.memberId)
 			if (!member.agency.toString().includes(user.id.toString())) {
 				return response.status(400).json({ error: 'this member is not under your agency, release not allowed' })
 			}
 
+			let freeAgentPrice = Math.floor(member.fanSize * 0.8)
+			if (freeAgentPrice < 480) {
+				freeAgentPrice = 480
+			}
+
 			const memberUpdate = {
 				agency: null,
-				value: 480,
+				value: freeAgentPrice,
+				job: {},
 				tradable: true
 			}
 			await Member.findByIdAndUpdate(member.id, memberUpdate, { new: true })
