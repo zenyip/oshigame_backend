@@ -2,10 +2,16 @@ const jobRouter = require('express').Router()
 const User = require('../models/user')
 const Member = require('../models/member')
 const jwt = require('jsonwebtoken')
+const phraseCheck = require('../modules/phraseCheck')
 
 jobRouter.post('/assign', async (request, response, next) => {
 	try {
 		const body = request.body
+		const phrase = phraseCheck()
+
+		if (phrase !== 'general') {
+			return response.status(400).json({ error: 'it is now outside workable phrases' })
+		}
 
 		const decodedToken = jwt.	verify(request.token, process.env.SECRET)
 		if (!request.token || !decodedToken.id) {

@@ -3,6 +3,7 @@ const User = require('../models/user')
 const Negotiation = require('../models/negotiation')
 const Member = require('../models/member')
 const jwt = require('jsonwebtoken')
+const phraseCheck = require('../modules/phraseCheck')
 
 negotiationsRouter.get('/', async (request, response, next) => {
 	try {
@@ -70,6 +71,11 @@ negotiationsRouter.get('/byUserToken', async (request, response, next) => {
 negotiationsRouter.post('/', async (request, response, next) => {
 	try {
 		const body = request.body
+
+		const phrase = phraseCheck()
+		if (phrase !== 'negotiation' && body.tradeType !=='release' && body.tradeType !=='late') {
+			return response.status(400).json({ error: 'it is now outside neogitation period' })
+		}
 
 		const decodedToken = jwt.verify(request.token, process.env.SECRET)
 		if (!request.token || !decodedToken.id) {
@@ -148,6 +154,10 @@ negotiationsRouter.post('/', async (request, response, next) => {
 				return response.status(400).json({ error: 'this member is no longer under this agency, please refresh the page' })
 			}
 
+			if (!member.tradable) {
+				return response.status(400).json({ error: 'this member is protected from trading for this negotiation period' })
+			}
+
 			const oldOffer = await Negotiation.findOne({ member: body.memberId, tradeType: 'offer', applicant: user.id })
 			if (oldOffer) {
 				return response.status(400).json({ error: 'only one valid offer is allowed each time per member' })
@@ -187,6 +197,10 @@ negotiationsRouter.post('/', async (request, response, next) => {
 				return response.status(400).json({ error: 'this member is no longer under this agency, please refresh the page' })
 			}
 
+			if (!member.tradable) {
+				return response.status(400).json({ error: 'this member is protected from trading for this negotiation period' })
+			}
+
 			const negotiation = new Negotiation({
 				member: body.memberId,
 				bid: body.bid,
@@ -207,7 +221,9 @@ negotiationsRouter.post('/', async (request, response, next) => {
 
 			const memberUpdate = {
 				agency: user.id,
-				value: body.bid
+				value: body.bid,
+				tradable: false,
+				job: {}
 			}
 			await Member.findByIdAndUpdate(body.memberId, memberUpdate, { new: true })
 
@@ -265,7 +281,8 @@ negotiationsRouter.post('/', async (request, response, next) => {
 
 			const memberUpdate = {
 				agency: user.id,
-				value: body.bid
+				value: body.bid,
+				tradable: true
 			}
 			await Member.findByIdAndUpdate(body.memberId, memberUpdate, { new: true })
 
@@ -381,7 +398,9 @@ negotiationsRouter.post('/accept', async (request, response, next) => {
 
 		const memberUpdate = {
 			agency: negotiation.applicant,
-			value: negotiation.bid
+			value: negotiation.bid,
+			tradable: false,
+			job: {}
 		}
 		await Member.findByIdAndUpdate(negotiation.member, memberUpdate, { new: true })
 

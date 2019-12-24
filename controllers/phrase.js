@@ -2,13 +2,23 @@ const phraseRouter = require('express').Router()
 const Phrase = require('../models/phrase')
 const User = require('../models/user')
 const jwt = require('jsonwebtoken')
+const phraseCheck = require('../modules/phraseCheck')
 
-phraseRouter.get('/', async (request, response, next) => {
+/*phraseRouter.get('/', async (request, response, next) => {
 	try {
 		const phrase = await Phrase.find({ identifier: 'status' })
 
 		response.json(phrase)
 
+	} catch (exception) {
+		next(exception)
+	}
+})*/
+
+phraseRouter.get('/', async (request, response, next) => {
+	try {
+		const phrase = phraseCheck()
+		response.json(phrase)
 	} catch (exception) {
 		next(exception)
 	}
