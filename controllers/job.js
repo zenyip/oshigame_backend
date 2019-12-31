@@ -58,7 +58,7 @@ jobRouter.post('/assign', async (request, response, next) => {
 		const userUpdate = {
 			assest: user.assest - feeNeeded
 		}
-		await User.findByIdAndUpdate(decodedToken.id, userUpdate, { new: true })
+		const updatedUser = await User.findByIdAndUpdate(decodedToken.id, userUpdate, { new: true })
 
 		const memberUpdate = {
 			job:{
@@ -67,7 +67,11 @@ jobRouter.post('/assign', async (request, response, next) => {
 			}
 		}
 		const updatedMember = await Member.findByIdAndUpdate(body.memberId, memberUpdate, { new: true })
-		response.json(updatedMember)
+		const responseInfo = {
+			currentAssest: updatedUser.assest,
+			job: updatedMember.job
+		}
+		response.json(responseInfo)
 	} catch (exception) {
 		next(exception)
 	}
@@ -161,15 +165,17 @@ jobRouter.put('/collect', async (request, response, next) => {
 			fanSize: member.fanSize + fanReward,
 			job: {}
 		}
-		await Member.findByIdAndUpdate(body.memberId, memberUpdate, { new: true })
+		const updatedMember = await Member.findByIdAndUpdate(body.memberId, memberUpdate, { new: true })
 
 		const userUpdate = {
 			assest: user.assest + moneyReward
 		}
-		await User.findByIdAndUpdate(decodedToken.id, userUpdate, { new: true })
+		const updatedUser = await User.findByIdAndUpdate(decodedToken.id, userUpdate, { new: true })
 		const collectedRewards = {
 			fanReward,
-			moneyReward
+			moneyReward,
+			currentFanSize: updatedMember.fanSize,
+			currentAssest: updatedUser.assest
 		}
 		response.json(collectedRewards)
 	} catch (exception) {
