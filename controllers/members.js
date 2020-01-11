@@ -47,6 +47,7 @@ membersRouter.post('/', async (request, response, next) => {
 			hometown: body.hometown,
 			generation,
 			pic_link: body.pic_link,
+			pic_forCert: body.pic_forCert,
 			team: body.team,
 			agency: null,
 			value: 480,
@@ -59,6 +60,49 @@ membersRouter.post('/', async (request, response, next) => {
 		const savedMember = await member.save()
 
 		response.json(savedMember)
+	} catch (exception) {
+		next(exception)
+	}
+})
+
+membersRouter.put('/:id', async (request, response, next) => {
+	try {
+		const decodedToken = jwt.verify(request.token, process.env.SECRET)
+		if (!request.token || !decodedToken.id) {
+			return response.status(401).json({ error: 'token missing or invalid' })
+		}
+
+		const user = await User.findById(decodedToken.id)
+
+		if (!user || !user.admin) {
+			return response.status(401).json({ error: 'access limited to admin only' })
+		}
+
+		const body = request.body.updateMember
+
+		const generation = {
+			name: body.generation,
+			sortValue : generationSortValue(body.generation)
+		}
+
+		const update = {
+			name_e: body.name_e,
+			name_j: body.name_j,
+			name_k: body.name_k,
+			nickname: body.nickname,
+			birthday: body.birthday,
+			hometown: body.hometown,
+			generation,
+			pic_link: body.pic_link,
+			pic_forCert: body.pic_forCert,
+			team: body.team,
+			current: body.current,
+			kks: body.kks,
+		}
+
+		const editedMember = await Member.findByIdAndUpdate(request.params.id, update, { new: true })
+
+		response.json(editedMember)
 	} catch (exception) {
 		next(exception)
 	}

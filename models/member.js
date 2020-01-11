@@ -43,6 +43,7 @@ const memberSchema = mongoose.Schema({
 		},
 	},
 	pic_link: String,
+	pic_forCert: String,
 	team: [String],
 	agency: {
 		type: mongoose.Schema.Types.ObjectId,
